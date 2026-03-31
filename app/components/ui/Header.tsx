@@ -24,7 +24,7 @@ export default function Header() {
       <div className={styles.left}>
         <img src="/favicon.ico" alt="Logo" className={styles.logo} />
         <div className={styles.textContainer}>
-          <h1>สภาเภสัชกรรม</h1>
+          <h1>สำนักงานเลขาธิการสภาเภสัชกรรม</h1>
           <p>The Pharmacy Council of Thailand</p>
         </div>
       </div>

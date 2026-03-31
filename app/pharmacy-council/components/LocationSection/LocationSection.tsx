@@ -68,7 +68,8 @@ export default function LocationSection() {
                             <div className={styles.contactIcon}><PhoneIcon /></div>
                             <div>
                                 <h4>โทรศัพท์</h4>
-                                <p>02-591-9992 ต่อ 7</p>
+                                <p>02-591-9992 ต่อ 5</p>
+                                <p>02-591-9996</p>
                             </div>
                         </div>
 
