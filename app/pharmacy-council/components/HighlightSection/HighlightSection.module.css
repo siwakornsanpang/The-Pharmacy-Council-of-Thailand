@@ -14,7 +14,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.4); /* Light overlay to see background clearly while keeping text readable */
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.6) 100%);
     z-index: 1;
 }
 
@@ -52,19 +52,22 @@
 .marqueeWrapper {
     width: 100%;
     overflow: hidden;
-    padding: 40px 0 80px 0;
+    padding: 60px 0 100px 0;
     /* Edge fading effect */
-    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    perspective: 1200px;
+    perspective-origin: center;
 }
 
 .marqueeContent {
     display: flex;
     width: max-content;
-    gap: 32px;
-    padding-left: 32px;
-    animation: marqueeScroll 60s linear infinite;
-    align-items: center; /* Vertical center by default */
+    gap: 40px;
+    padding-left: 40px;
+    animation: marqueeScroll 80s linear infinite;
+    align-items: center;
+    transform-style: preserve-3d;
 }
 
 /* Pause marquee on hover */
@@ -81,48 +84,71 @@
     }
 }
 
-/* Staggered vertical offsets for masonry feel */
+/* Staggered vertical offsets and rotations for 3D feel */
+.marqueeItem {
+    transform-style: preserve-3d;
+}
+
 .marqueeItem:nth-child(4n+1) .imageCard {
     height: 480px;
     width: 320px;
-    transform: translateY(-20px);
+    --y-base: -20px;
+    --rot-y: 8deg;
+    --rot-x: 2deg;
+    transform: translateY(var(--y-base)) rotateY(var(--rot-y)) rotateX(var(--rot-x));
 }
 
 .marqueeItem:nth-child(4n+2) .imageCard {
     height: 380px;
     width: 450px;
-    transform: translateY(40px);
+    --y-base: 40px;
+    --rot-y: -6deg;
+    --rot-x: -3deg;
+    transform: translateY(var(--y-base)) rotateY(var(--rot-y)) rotateX(var(--rot-x));
 }
 
 .marqueeItem:nth-child(4n+3) .imageCard {
     height: 520px;
     width: 380px;
-    transform: translateY(-40px);
+    --y-base: -40px;
+    --rot-y: 5deg;
+    --rot-x: -2deg;
+    transform: translateY(var(--y-base)) rotateY(var(--rot-y)) rotateX(var(--rot-x));
 }
 
 .marqueeItem:nth-child(4n) .imageCard {
     height: 420px;
     width: 340px;
-    transform: translateY(20px);
+    --y-base: 20px;
+    --rot-y: -10deg;
+    --rot-x: 4deg;
+    transform: translateY(var(--y-base)) rotateY(var(--rot-y)) rotateX(var(--rot-x));
 }
 
 .imageCard {
     border-radius: 32px;
     overflow: hidden;
-    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.12);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Layered shadow for depth */
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
     cursor: pointer;
-    background: #f8f8f8;
-    /* Floating subtle animation */
-    animation: float 6s ease-in-out infinite;
+    background: #f0f0f0;
+    /* Floating subtle animation that preserves 3D */
+    animation: float 8s ease-in-out infinite;
     position: relative;
+    transform-origin: center center;
+    backface-visibility: hidden;
 }
 
 /* Dim effect for other cards when one is hovered */
+/* Dim effect for other cards when one is hovered */
 .marqueeContent:hover .imageCard {
-    opacity: 0.7;
-    filter: brightness(0.8) saturate(0.8);
-    transform: scale(0.95) translateY(var(--y-base, 0));
+    opacity: 0.5;
+    filter: brightness(0.7) saturate(0.5) blur(2px);
+    transform: translateY(var(--y-base)) rotateY(calc(var(--rot-y) * 0.5)) scale(0.9);
 }
 
 .imageCard::after {
@@ -139,8 +165,12 @@
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(var(--y-base, 0)); }
-    50% { transform: translateY(calc(var(--y-base, 0) - 10px)); }
+    0%, 100% { 
+        transform: translateY(var(--y-base)) rotateY(var(--rot-y)) rotateX(var(--rot-x)); 
+    }
+    50% { 
+        transform: translateY(calc(var(--y-base) - 15px)) rotateY(calc(var(--rot-y) + 2deg)) rotateX(calc(var(--rot-x) - 1deg)); 
+    }
 }
 
 .marqueeItem:nth-child(4n+1) .imageCard { --y-base: -20px; }
@@ -150,9 +180,17 @@
 
 .imageCard:hover {
     opacity: 1 !important;
-    filter: brightness(1) saturate(1.1) !important;
-    transform: scale(1.15) translateY(calc(var(--y-base, 0) - 25px)) !important;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
+    filter: brightness(1.05) saturate(1.1) blur(0) !important;
+    transform: 
+        translateY(calc(var(--y-base) - 30px)) 
+        translateZ(100px) 
+        rotateY(0deg) 
+        rotateX(0deg) 
+        scale(1.1) !important;
+    box-shadow: 
+        0 40px 100px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(106, 106, 29, 0.2), /* Subtle theme color glow */
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
     z-index: 100;
 }
 
